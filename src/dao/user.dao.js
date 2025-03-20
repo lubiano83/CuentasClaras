@@ -4,7 +4,7 @@ export default class UserDao {
 
     getUsers = async() => {
         try {
-            const [rows] = await pool.query("SELECT id, nombre, email, fecha_creacion FROM usuarios");
+            const [rows] = await pool.query("SELECT id, nombre, email, fecha_creacion, role FROM usuarios");
             return rows;
         } catch (error) {
             throw new Error(`dao: ${error.message}`);
@@ -13,12 +13,12 @@ export default class UserDao {
 
     getUserById = async(id) => {
         try {
-            const [rows] = await pool.query("SELECT id, nombre, email, fecha_creacion FROM usuarios WHERE id = ?", [id]);
+            const [rows] = await pool.query("SELECT id, nombre, email, fecha_creacion, role FROM usuarios WHERE id = ?", [id]);
             return rows[0] || null;
         } catch (error) {
             throw new Error(`dao: ${error.message}`);
         }
-    }
+    };
     
     getUserByEmail = async(email) => {
         try {
@@ -51,17 +51,35 @@ export default class UserDao {
 
     changePassword = async(id, password) => {
         try {
-            const [result] = await pool.query("UPDATE usuarios SET password = ? WHERE id = ?",[password, id]);
+            const [result] = await pool.query("UPDATE usuarios SET password = ? WHERE id = ?", [password, id]);
             return result.affectedRows > 0;
         } catch (error) {
             throw new Error(`dao: ${error.message}`);
         }
     };
 
-    deleteUser = async(id) => {
+    changeRole = async(id, role) => {
+        try {
+            const [result] = await pool.query("UPDATE usuarios SET role = ? WHERE id = ?", [role, id]);
+            return result.affectedRows > 0;
+        } catch (error) {
+            throw new Error(`dao: ${error.message}`);
+        }
+    };
+
+    deleteUserById = async(id) => {
         try {
             const [result] = await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
             return result.affectedRows > 0;
+        } catch (error) {
+            throw new Error(`dao: ${error.message}`);
+        }
+    };
+
+    truncateUsers = async () => {
+        try {
+            await pool.query("TRUNCATE TABLE usuarios");
+            return true;
         } catch (error) {
             throw new Error(`dao: ${error.message}`);
         }
