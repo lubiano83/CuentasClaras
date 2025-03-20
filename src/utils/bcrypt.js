@@ -7,7 +7,7 @@ const createHash = async(password) =>{
     return bcrypt.hash(password,salts);
 }
 
-const isValidPassword = async(user,password) => bcrypt.compare(password, user.password);
+const isValidPassword = async(user, password) => bcrypt.compare(password, user.password);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

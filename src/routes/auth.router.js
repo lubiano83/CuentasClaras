@@ -9,8 +9,8 @@ const permissions = passport.authenticate("current", { session: false });
 
 ROUTER.post("/register", authController.registerUser);
 ROUTER.post("/login", authController.loginUser);
-ROUTER.delete("/logout", permissions, Usuario, authController.logoutUser);
-ROUTER.patch("/password", permissions, Usuario, authController.changePasswordById);
-ROUTER.patch("/role", permissions, Usuario, authController.changeRoleById);
+ROUTER.delete("/logout", authController.logoutUser);
+ROUTER.patch("/password", authController.changePasswordById);
+ROUTER.patch("/role", authController.changeRoleById);
 
 export default ROUTER;

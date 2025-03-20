@@ -22,7 +22,7 @@ export default class UserDao {
     
     getUserByEmail = async(email) => {
         try {
-            const [rows] = await pool.query("SELECT * FROM usuarios WHERE email = ?", [email]);
+            const [rows] = await pool.query("SELECT id, nombre, email, fecha_creacion, role FROM usuarios WHERE email = ?", [email]);
             return rows[0] || null;
         } catch (error) {
             throw new Error(`dao: ${error.message}`);

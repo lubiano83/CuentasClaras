@@ -8,10 +8,9 @@ const userController = new UserController();
 const permissions = passport.authenticate("current", { session: false });
 
 ROUTER.get("/", permissions, Usuario, userController.getUsers);
-ROUTER.delete("/", permissions, Developer, userController.deleteAllUser);
+ROUTER.put("/", permissions, Usuario, userController.updateUserById);
+ROUTER.delete("/", permissions, Usuario, userController.deleteUserById);
 ROUTER.get("/id", permissions, Usuario, userController.getUserById);
-ROUTER.put("/id", permissions, Usuario, userController.updateUserById);
-ROUTER.delete("/id", permissions, Usuario, userController.deleteUserById);
-ROUTER.get("/:email", permissions, Usuario, userController.getUserByEmail);
+ROUTER.delete("/all", permissions, Usuario, userController.deleteAllUser);
 
 export default ROUTER;

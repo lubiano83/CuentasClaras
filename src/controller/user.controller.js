@@ -1,6 +1,4 @@
 import UserDao from "../dao/user.dao.js";
-import { createHash, isValidPassword } from "../utils/bcrypt.js";
-import jwt from "jsonwebtoken";
 
 const userDao = new UserDao();
 
@@ -27,17 +25,6 @@ export default class UserController {
         }
     };
 
-    getUserByEmail = async(req, res) => {
-        try {
-            const { email } = req.body;
-            if(!email) return res.status(400).send({ message: "El campo email es requerido.." })
-            const user = await userDao.getUserByEmail(email.toLowerCase());
-            return res.status(200).send({ message: "Usuario obtenido por el email..", user });
-        } catch (error) {
-            return res.status(500).send({ message: "Error interno del servidor.", error: `controller: ${error.message}` });
-        }
-    };
-
     updateUserById = async(req, res) => {
         try {
             const { id } = req.user;
@@ -48,7 +35,7 @@ export default class UserController {
             if(!user) return res.status(404).send({ message: "Usuario no encontrado.." });
             const updatedUser = { nombre: nombre.toLowerCase(), email: email.toLowerCase() };
             await userDao.updateUser(Number(id), updatedUser);
-            return res.status(200).send({ message: "Usuario modificado con exito..", updatedUser });
+            return res.status(200).send({ message: "Usuario modificado con exito..", user: updatedUser });
         } catch (error) {
             return res.status(500).send({ message: "Error interno del servidor.", error: `controller: ${error.message}` });
         }

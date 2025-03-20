@@ -14,7 +14,8 @@ export default class AuthController {
             const existingUser = await userDao.getUserByEmail(email.toLowerCase());
             if (existingUser) return res.status(409).json({ message: "Ese usuario ya está registrado.." });
             if (password.length < 6 || password.length > 10) return res.status(400).json({ message: "La contraseña debe tener entre 6 y 10 caracteres.." });
-            const newUser = { nombre: nombre.toLowerCase(), email: email.toLowerCase(), password: await createHash(String(password)) };
+            const hashedPassword =  await createHash(String(password));
+            const newUser = { nombre: nombre.toLowerCase(), email: email.toLowerCase(), password: hashedPassword };
             await userDao.addUser(newUser);
             return res.status(200).json({ message: "Usuario registrado exitosamente", newUser });
         } catch (error) {
@@ -26,14 +27,14 @@ export default class AuthController {
         try {
             const data = req.body;
             const { email, password } = data;
-            if( !email || !password ) return res.status( 400 ).send({ message: "Todos los campos son requeridos.." });
+            if( !email || !password ) return res.status(400).send({ message: "Todos los campos son requeridos.." });
             const user = await userDao.getUserByEmail(email);
             if(!user) return res.status( 409 ).json({ message: "Ese usuario no esta registrado.." });
-            const passwordMatch = await isValidPassword(user, String(password));
-            if ( !passwordMatch ) return res.status( 401 ).json({ status: 401, message: "La contraseña es incorrecta.." });
             const userLogged = req.cookies[ process.env.COOKIE_NAME ];
+            const passwordMatch = await isValidPassword(user, String(password));
             if ( userLogged ) return res.status( 200 ).send({ message: "Ese usuario ya está logeado" });
-            const token = jwt.sign({ nombre: user.nombre.toLowerCase(), email: user.email, id: user.id }, process.env.COOKIE_KEY, { expiresIn: "1h" });
+            if ( !passwordMatch ) return res.status(401).send({ message: "La contraseña es incorrecta.." });
+            const token = jwt.sign({ nombre: user.nombre.toLowerCase(), email: user.email, id: user.id, role: user.role }, process.env.COOKIE_KEY, { expiresIn: "1h" });
             res.cookie( process.env.COOKIE_NAME, token, { maxAge: 3600000, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "none", path: "/" });
             return res.status( 200 ).json({ message: "Login realizado con éxito", token });
         } catch ( error ) {
