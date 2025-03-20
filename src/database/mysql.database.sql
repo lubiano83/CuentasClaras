@@ -24,6 +24,8 @@ CREATE TABLE ingresos (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+SELECT * FROM ingresos; -- Revisamos la tabla de ingresos
+
 -- Tabla Costos Fijos
 CREATE TABLE costos_fijos (
     id INT AUTO_INCREMENT PRIMARY KEY,

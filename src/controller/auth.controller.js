@@ -27,12 +27,12 @@ export default class AuthController {
         try {
             const data = req.body;
             const { email, password } = data;
-            if( !email || !password ) return res.status(400).send({ message: "Todos los campos son requeridos.." });
-            const user = await userDao.getUserByEmail(email);
-            if(!user) return res.status( 409 ).json({ message: "Ese usuario no esta registrado.." });
             const userLogged = req.cookies[ process.env.COOKIE_NAME ];
+            if ( userLogged ) return res.status( 200 ).send({ message: "Ese usuario ya está logeado.." });
+            if( !email || !password ) return res.status(400).send({ message: "Todos los campos son requeridos.." });
+            const user = await userDao.getUserByEmail(email.toLowerCase());
+            if(!user) return res.status(404).send({ message: "Ese usuario no esta registrado.." });
             const passwordMatch = await isValidPassword(user, String(password));
-            if ( userLogged ) return res.status( 200 ).send({ message: "Ese usuario ya está logeado" });
             if ( !passwordMatch ) return res.status(401).send({ message: "La contraseña es incorrecta.." });
             const token = jwt.sign({ nombre: user.nombre.toLowerCase(), email: user.email, id: user.id, role: user.role }, process.env.COOKIE_KEY, { expiresIn: "1h" });
             res.cookie( process.env.COOKIE_NAME, token, { maxAge: 3600000, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "none", path: "/" });

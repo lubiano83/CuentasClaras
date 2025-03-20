@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.router.js";
 import authRouter from "./routes/auth.router.js";
+import incomeRouter from "./routes/income.router.js";
 import passport from "passport";
 import initializePassport from "./config/passport.config.js";
 
@@ -23,6 +24,7 @@ initializePassport();
 // Rutas
 APP.use("/api/user", userRouter);
 APP.use("/api/auth", authRouter);
+APP.use("/api/income", incomeRouter);
 
 // Listening
 APP.listen(PORT, () => console.log(`Escuchando en http://${HOST}:${PORT}`));
